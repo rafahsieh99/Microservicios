@@ -1,0 +1,43 @@
+# Entornos virtuales
+venv/
+.venv/
+
+# Archivos de configuración específicos del entorno
+config.py
+.env
+
+# Archivos de bases de datos locales
+*.db
+*.sqlite3  # Asegúrate de incluir SQLite si la usas
+
+# Archivos compilados de Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Logs
+*.log
+*.log.*
+logs/
+
+# Archivos temporales de sistemas operativos
+.DS_Store
+Thumbs.db
+
+# Archivos creados por editores y entornos de desarrollo
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Cualquier archivo generado por pruebas o caché de dependencias
+*.pytest_cache/
+*.coverage  # Archivos de cobertura de pruebas
+*.egg-info/  # Información de paquetes Python
+
+# Archivos de datos de pruebas (si usas archivos de datos temporales)
+*.csv
+*.json
+*.yaml
+*.yml
