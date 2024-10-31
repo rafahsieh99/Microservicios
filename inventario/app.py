@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from db import get_db_connection
 from validaciones import validar_producto
+from rabbitmq import enviar_mensaje_a_rabbitmq
 import pybreaker
 
 app = Flask(__name__)
@@ -25,6 +26,7 @@ def agregar_inventario():
     except Exception as e:
         return jsonify({'mensaje': 'Error al verificar el producto', 'error': str(e)}), 503
 
+    # Agregar inventario a la base de datos
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute(
@@ -36,11 +38,15 @@ def agregar_inventario():
     cursor.close()
     conn.close()
 
+    # Enviar un mensaje a RabbitMQ
+    mensaje = {'accion': 'agregar', 'producto_id': producto_id, 'cantidad': cantidad}
+    enviar_mensaje_a_rabbitmq(mensaje)
+
     return jsonify({'mensaje': 'Inventario agregado', 'id': inventario_id}), 201
 
 # Ruta para obtener el inventario
 @app.route('/inventario', methods=['GET'])
-def obtener_inventario(usuario):
+def obtener_inventario():
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM inventario")
@@ -54,7 +60,7 @@ def obtener_inventario(usuario):
 
 # Ruta para obtener un inventario por ID
 @app.route('/inventario/<int:id>', methods=['GET'])
-def obtener_inventario_por_id(usuario, id):
+def obtener_inventario_por_id(id):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM inventario WHERE id = %s", (id,))
