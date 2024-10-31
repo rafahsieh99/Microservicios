@@ -40,7 +40,6 @@ def enviar_mensaje(mensaje):
 
 # Ruta para crear un producto
 @app.route('/productos', methods=['POST'])
-@app.route('/productos', methods=['POST'])
 def crear_producto():
     try:
         data = request.get_json(force=True)  # Forzar a interpretar el cuerpo como JSON
