@@ -1,7 +1,5 @@
 # API de Microservicio de Productos 
 
----
-
 ### 1. Crear Producto
 - **Ruta:** `/productos`
 - **Método:** `POST`
@@ -42,7 +40,7 @@ Devuelve un array de objetos, cada uno representando un producto.
     "precio": "integer",
     "descripcion": "string"
   },
-  ...
+
 ]
 
 
