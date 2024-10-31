@@ -5,6 +5,7 @@ Ruta: /productos
 Método: POST
 Descripción: Crea un nuevo producto con nombre, precio y descripción.
 Request Body:
+```json
 {
   "nombre": "string",
   "precio": "integer",
