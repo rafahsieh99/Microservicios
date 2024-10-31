@@ -1,19 +1,29 @@
 from flask import Flask, request, jsonify
 from db import get_db_connection
 from validaciones import validar_producto
+import pybreaker
 
 app = Flask(__name__)
 
+# Inicializar el circuito de ruptura
+circuit_breaker = pybreaker.CircuitBreaker(
+    fail_max=3,         # Número máximo de fallas antes de abrir el circuito
+    reset_timeout=30    # Tiempo en segundos para reiniciar el circuito
+)
+
 # Ruta para agregar inventario
 @app.route('/inventario', methods=['POST'])
-def agregar_inventario(usuario):
+def agregar_inventario():
     data = request.get_json()
     producto_id = int(data.get('producto_id'))
     cantidad = int(data.get('cantidad'))
 
     # Validar que el producto existe llamando al microservicio de productos
-    if not validar_producto(producto_id):
-        return jsonify({'mensaje': 'Producto no encontrado'}), 404
+    try:
+        if not circuit_breaker.call(validar_producto, producto_id):
+            return jsonify({'mensaje': 'Producto no encontrado'}), 404
+    except Exception as e:
+        return jsonify({'mensaje': 'Error al verificar el producto', 'error': str(e)}), 503
 
     conn = get_db_connection()
     cursor = conn.cursor()
