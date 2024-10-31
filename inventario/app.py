@@ -1,40 +1,11 @@
 from flask import Flask, request, jsonify
-import requests
 from db import get_db_connection
 from validaciones import validar_producto
-from autenticacion import generar_token, verificar_token  # Importa el manejador de autenticación
-from functools import wraps
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '123456'  # Cambia esto por una clave más segura
-
-# Decorador para proteger las rutas
-def token_requerido(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-        if 'Authorization' in request.headers:
-            token = request.headers['Authorization'].split(" ")[1]
-
-        if not token:
-            return jsonify({'mensaje': 'Token es necesario'}), 403
-        
-        user = verificar_token(token)
-        if not user:
-            return jsonify({'mensaje': 'Token inválido'}), 403
-        
-        return f(user, *args, **kwargs)
-    return decorated
-
-# Ruta para generar un token
-@app.route('/generar_token', methods=['GET'])
-def generar_token_route():
-    token = generar_token('usuario_prueba')  # Cambia esto por la información real del usuario
-    return jsonify({'token': token}), 200
 
 # Ruta para agregar inventario
 @app.route('/inventario', methods=['POST'])
-@token_requerido  # Protege la ruta con autenticación
 def agregar_inventario(usuario):
     data = request.get_json()
     producto_id = int(data.get('producto_id'))
@@ -59,7 +30,6 @@ def agregar_inventario(usuario):
 
 # Ruta para obtener el inventario
 @app.route('/inventario', methods=['GET'])
-@token_requerido  # Protege la ruta con autenticación
 def obtener_inventario(usuario):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -74,7 +44,6 @@ def obtener_inventario(usuario):
 
 # Ruta para obtener un inventario por ID
 @app.route('/inventario/<int:id>', methods=['GET'])
-@token_requerido  # Protege la ruta con autenticación
 def obtener_inventario_por_id(usuario, id):
     conn = get_db_connection()
     cursor = conn.cursor()
