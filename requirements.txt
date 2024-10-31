@@ -1,4 +1,4 @@
 Flask==2.3.3
 psycopg2==2.9.6
 pybreaker==1.0.0s
-requests==2.28.1  
+requests==2.28.1
