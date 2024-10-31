@@ -1,23 +1,10 @@
 from flask import Flask, request, jsonify
 from db import get_db_connection
-from autenticacion import verificar_token, token_requerido, generar_token  # Importar funciones de autenticación
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '123456'
-# Ruta para iniciar sesión y generar un token
-@app.route('/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    usuario = data.get('usuario')  # Suponiendo que envías un nombre de usuario
-    # Aquí puedes agregar lógica para verificar el usuario (por ejemplo, con una base de datos)
-    
-    # Generar el token
-    token = generar_token(usuario)
-    return jsonify({'token': token}), 200
 
 # Ruta para crear un producto
 @app.route('/productos', methods=['POST'])
-@token_requerido  # Proteger la ruta
 def crear_producto():
     data = request.get_json()
     nombre = data.get('nombre')
@@ -39,7 +26,6 @@ def crear_producto():
 
 # Ruta para obtener todos los productos
 @app.route('/productos', methods=['GET'])
-@token_requerido  # Proteger la ruta
 def obtener_productos():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -53,7 +39,6 @@ def obtener_productos():
 
 # Ruta para obtener un producto por ID
 @app.route('/productos/<int:id>', methods=['GET'])
-@token_requerido  # Proteger la ruta
 def obtener_producto(id):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -69,7 +54,6 @@ def obtener_producto(id):
 
 # Ruta para actualizar un producto
 @app.route('/productos/<int:id>', methods=['PUT'])
-@token_requerido  # Proteger la ruta
 def actualizar_producto(id):
     data = request.get_json()
     nombre = data.get('nombre')
@@ -90,7 +74,6 @@ def actualizar_producto(id):
 
 # Ruta para eliminar un producto
 @app.route('/productos/<int:id>', methods=['DELETE'])
-@token_requerido  # Proteger la ruta
 def eliminar_producto(id):
     conn = get_db_connection()
     cursor = conn.cursor()
